@@ -44,6 +44,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 
 class CityComputeDialog(QtWidgets.QDialog, FORM_CLASS):
+    folder=r"D:\socialComputeData1"
     def __init__(self, parent=None):
         """Constructor."""
         super(CityComputeDialog, self).__init__(parent)
@@ -70,7 +71,7 @@ class CityComputeDialog(QtWidgets.QDialog, FORM_CLASS):
             return
 
         # 设置保存目录
-        output_folder = r"D:\\socialComputeData"
+        output_folder = self.folder
         # 如果目录不存在，则创建目录
         if not os.path.exists(output_folder):
             os.makedirs(output_folder)
@@ -128,15 +129,20 @@ class CityComputeDialog(QtWidgets.QDialog, FORM_CLASS):
         print("所有数据裁剪完成!")
     def onPbRun2Clicked(self):
         # 调用函数，传入文件夹路径
-        folder_path = r"D:\socialComputeData"  # 请替换为你的文件夹路径
+        folder_path = self.folder
         self.process_tif_files(folder_path)
 
     def onPb2VectorClicked(self):
         self.load_tif_files()
     def onPbPopulationClicked(self):
         # 文件夹路径
-        vector_folder = r'D:\socialComputeData\vector2'
-        output_folder = r'D:\socialComputeData\vector3'
+        vector_folder =self.folder+ r"\vector2"
+        output_folder = self.folder+r"\vector3"
+
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+            print(f"目录 {output_folder} 已创建。")
+
 
         raster_layer=self.mlRaster.currentLayer()
 
@@ -206,14 +212,19 @@ class CityComputeDialog(QtWidgets.QDialog, FORM_CLASS):
         print("所有文件处理完成！")
 
     def onPbOutputCsvClicked(self):
-        folder_path = r"D:\socialComputeData\vector3"  # 替换为实际的文件夹路径
-        output_csv_path = r"D:\socialComputeData\csv\data.csv"  # 替换为输出文件路径
+        folder_path = self.folder+r"\vector3"
+        csv_folder=self.folder+r"\csv"
+        output_csv_path = self.folder+r"\csv\data.csv"
+
+        if not os.path.exists(csv_folder):
+            os.makedirs(csv_folder)
+            print(f"目录 {csv_folder} 已创建。")
 
         self.read_sum_attributes_from_shp(folder_path, output_csv_path)
 
     def onPbCenterClicked(self):
-        csvPath=r"D:\socialComputeData\csv\data.csv"
-        outPath=r"D:\socialComputeData\csv\data2.csv"
+        csvPath=self.folder+r"\csv\data.csv"
+        outPath=self.folder+r"\csv\data2.csv"
         # 读取CSV文件
         df = pd.read_csv(csvPath)
 
@@ -299,7 +310,10 @@ class CityComputeDialog(QtWidgets.QDialog, FORM_CLASS):
             # 获取输入文件名（不带扩展名）
             input_filename = os.path.splitext(os.path.basename(tif_file))[0]
 
-            folder_path = r"D:\socialComputeData\split"  # 请替换为你的文件夹路径
+            folder_path = self.folder+r"\split"  # 请替换为你的文件夹路径
+
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
 
             # 构造输出文件路径
             output_file = os.path.join(folder_path, f"{input_filename}_threshold.tif")
@@ -312,8 +326,12 @@ class CityComputeDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def load_tif_files(self):
         # 指定文件夹路径
-        folder = r"D:\socialComputeData\split"
-        output_folder = r"D:\socialComputeData\vector2"
+        folder = self.folder+r"\split"
+        output_folder = self.folder+r"\vector2"
+
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+            print(f"目录 {output_folder} 已创建。")
 
         raster_layer = self.mlRaster.currentLayer()  # 获取当前的栅格图层
         raster_path = raster_layer.dataProvider().dataSourceUri()  # 获取光栅图层路径
